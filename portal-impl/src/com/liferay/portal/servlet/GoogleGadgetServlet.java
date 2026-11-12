@@ -100,12 +100,12 @@ public class GoogleGadgetServlet extends HttpServlet {
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		sb.append("<Module>");
 		sb.append("<ModulePrefs title=\"");
-		sb.append(title);
+		sb.append(HtmlUtil.escapeAttribute(title));
 		sb.append("\"/>");
 		sb.append("<Content type=\"html\">");
 		sb.append("<![CDATA[");
 		sb.append("<iframe frameborder=\"0\" height=\"100%\" src=\"");
-		sb.append(HtmlUtil.escape(widgetURL));
+		sb.append(HtmlUtil.escapeAttribute(widgetURL));
 		sb.append("\" width=\"100%\">");
 		sb.append("</iframe>");
 		sb.append("]]>");
