@@ -16,6 +16,7 @@ import com.liferay.info.filter.KeywordsInfoFilter;
 import com.liferay.info.filter.TagsInfoFilter;
 import com.liferay.info.pagination.Pagination;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -63,7 +64,14 @@ public abstract class SXPBlueprintInfoCollectionProvider<T>
 
 	@Override
 	public boolean isAvailable() {
-		return FeatureFlagManagerUtil.isEnabled("LPS-129412");
+		if (FeatureFlagManagerUtil.isEnabled("LPS-129412") &&
+			(sxpBlueprint.getCompanyId() ==
+				CompanyThreadLocal.getCompanyId())) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	protected SearchRequestBuilder getSearchRequestBuilder(
