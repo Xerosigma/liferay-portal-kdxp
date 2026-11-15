@@ -80,6 +80,16 @@ public class PasswordEncryptorUtil {
 		return _encrypt(algorithm, plainTextPassword, encryptedPassword, false);
 	}
 
+	public static String getEncryptedPasswordAlgorithmSettings(
+		String encryptedPassword) {
+
+		PasswordEncryptor passwordEncryptor = _select(
+			_getEncryptedPasswordAlgorithm(encryptedPassword));
+
+		return passwordEncryptor.getEncryptedPasswordAlgorithmSettings(
+			encryptedPassword);
+	}
+
 	private static String _encrypt(
 			String algorithm, String plainTextPassword,
 			String encryptedPassword, boolean upgradeHashSecurity)
