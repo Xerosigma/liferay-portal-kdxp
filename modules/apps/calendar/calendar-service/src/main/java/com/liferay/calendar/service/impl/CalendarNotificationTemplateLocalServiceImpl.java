@@ -13,8 +13,10 @@ import com.liferay.calendar.service.base.CalendarNotificationTemplateLocalServic
 import com.liferay.calendar.service.persistence.CalendarPersistence;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
@@ -73,21 +75,40 @@ public class CalendarNotificationTemplateLocalServiceImpl
 		calendarNotificationTemplate.setSubject(subject);
 		calendarNotificationTemplate.setBody(body);
 
-		return calendarNotificationTemplatePersistence.update(
-			calendarNotificationTemplate);
+		calendarNotificationTemplate =
+			calendarNotificationTemplatePersistence.update(
+				calendarNotificationTemplate);
+
+		_resourceLocalService.addResources(
+			calendarNotificationTemplate.getCompanyId(), 0,
+			calendarNotificationTemplate.getUserId(),
+			CalendarNotificationTemplate.class.getName(),
+			calendarNotificationTemplate.getCalendarNotificationTemplateId(),
+			false, false, false);
+
+		return calendarNotificationTemplate;
 	}
 
 	@Override
 	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public CalendarNotificationTemplate deleteCalendarNotificationTemplate(
-		CalendarNotificationTemplate calendarNotificationTemplate) {
+			CalendarNotificationTemplate calendarNotificationTemplate)
+		throws PortalException {
 
-		return calendarNotificationTemplatePersistence.remove(
-			calendarNotificationTemplate);
+		calendarNotificationTemplate =
+			calendarNotificationTemplatePersistence.remove(
+				calendarNotificationTemplate);
+
+		_resourceLocalService.deleteResource(
+			calendarNotificationTemplate, ResourceConstants.SCOPE_INDIVIDUAL);
+
+		return calendarNotificationTemplate;
 	}
 
 	@Override
-	public void deleteCalendarNotificationTemplates(long calendarId) {
+	public void deleteCalendarNotificationTemplates(long calendarId)
+		throws PortalException {
+
 		List<CalendarNotificationTemplate> calendarNotificationTemplates =
 			calendarNotificationTemplatePersistence.findByCalendarId(
 				calendarId);
@@ -135,6 +156,9 @@ public class CalendarNotificationTemplateLocalServiceImpl
 
 	@Reference
 	private CalendarPersistence _calendarPersistence;
+
+	@Reference
+	private ResourceLocalService _resourceLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;
