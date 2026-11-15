@@ -94,6 +94,20 @@ public class LoginMVCActionCommand extends BaseMVCActionCommand {
 			return;
 		}
 
+		HttpServletRequest httpServletRequest =
+			_portal.getOriginalServletRequest(
+				_portal.getHttpServletRequest(actionRequest));
+
+		if (AuthenticatedSessionManagerUtil.isPasswordParameterInQueryString(
+				httpServletRequest)) {
+
+			_postProcessAuthFailure(actionRequest, actionResponse);
+
+			hideDefaultErrorMessage(actionRequest);
+
+			return;
+		}
+
 		String state = ParamUtil.getString(actionRequest, "state");
 
 		if (!Validator.isBlank(state)) {
@@ -105,10 +119,6 @@ public class LoginMVCActionCommand extends BaseMVCActionCommand {
 
 		if (!Validator.isBlank(login) && !Validator.isBlank(password)) {
 			try {
-				HttpServletRequest httpServletRequest =
-					_portal.getOriginalServletRequest(
-						_portal.getHttpServletRequest(actionRequest));
-
 				long userId =
 					AuthenticatedSessionManagerUtil.getAuthenticatedUserId(
 						httpServletRequest, login, password, null);
